@@ -32,7 +32,7 @@ const Navbar = ({ userName = "Alicia Koch", avatarUrl }: NavbarProps) => {
     };
 
     return (
-        <header className="border-b border-zinc-800">
+        <header className="border-b border-zinc-800 bg-black">
             <div className="flex items-center justify-between px-6 py-4">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center">
