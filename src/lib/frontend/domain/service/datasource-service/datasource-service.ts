@@ -19,4 +19,13 @@ export class DataSourceService extends Model({}) implements IDataSourceService {
         const response = yield* _await(dataSourceApi.uploadFile(file, datasource));
         return response;
     });
+
+    @modelFlow
+    listDocuments = _async(function* (
+        this: DataSourceService,
+        datasource: string
+    ) {
+        const response = yield* _await(dataSourceApi.listDocuments(datasource));
+        return response;
+    });
 }
