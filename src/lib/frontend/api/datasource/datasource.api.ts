@@ -14,7 +14,7 @@ class DataSourceApi extends BaseApi {
   async uploadFile(file: FileDto) {
     const formData = new FormData();
     formData.append("datasource", file.datasource);
-    formData.append("content", file.content);
+    formData.append("file", file.content);
     return await this.post("/upload", formData, "multipart/form-data");
   }
 }
