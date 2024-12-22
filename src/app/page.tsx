@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { observer } from "mobx-react-lite";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
 import { Document } from '@/lib/frontend/api/datasource/datasource.api';
 
 function Home() {
+  const router = useRouter();
   const store = useServiceStore();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [filteredDocs, setFilteredDocs] = useState<Document[]>([]);
@@ -130,7 +132,9 @@ function Home() {
     <div className="min-h-screen bg-black">
       <main className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-white mb-4">Dashboard</h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
+          </div>
 
           <div className="flex gap-1 bg-zinc-900/50 w-fit rounded-md p-1">
             <Button
@@ -186,17 +190,26 @@ function Home() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-32 bg-zinc-900/50 border-0 text-white">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent className="bg-zinc-900 border-zinc-800">
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="pdf">PDF</SelectItem>
-              <SelectItem value="docx">DOCX</SelectItem>
-              <SelectItem value="txt">TXT</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-row space-x-3">
+            <Button
+              className="bg-white text-black hover:bg-zinc-200 gap-2"
+              onClick={() => router.push('/data')}
+            >
+              <FileText className="h-4 w-4" />
+              Add Document
+            </Button>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-32 bg-zinc-900/50 border-0 text-white">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="pdf">PDF</SelectItem>
+                <SelectItem value="docx">DOCX</SelectItem>
+                <SelectItem value="txt">TXT</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="rounded-lg overflow-hidden bg-zinc-900/50 mb-4">
