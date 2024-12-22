@@ -70,8 +70,20 @@ function Home() {
       );
     }
 
+    // Apply status/type filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(doc => {
+        if (doc.originalFilename) {
+          const ext = doc.originalFilename.split('.').pop()?.toLowerCase();
+          return ext === statusFilter;
+        }
+        return false;
+      });
+    }
+
     setFilteredDocs(filtered);
-  }, [searchQuery, documents]);
+  }, [searchQuery, statusFilter, documents]);
+
 
   const stats = [
     {
@@ -182,7 +194,7 @@ function Home() {
         </div>
 
         <div className="flex justify-between items-center mb-6 gap-4">
-          <div className="flex-1 max-w-md">
+          <div className="flex-1 max-w-lg">
             <Input
               placeholder="Search Documents..."
               className="bg-zinc-900/50 border-0 text-white placeholder:text-zinc-400"
