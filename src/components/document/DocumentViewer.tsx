@@ -3,128 +3,94 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { FileText, Archive, Trash2, Search, ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
+import { FileText, Search, ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
+import { Document } from '@/lib/frontend/api/datasource/datasource.api';
 
-const DocumentViewer = () => {
-    const [searchQuery, setSearchQuery] = useState('');
+interface DocumentViewerProps {
+    document: Document | null;
+}
+
+const DocumentViewer = ({ document }: DocumentViewerProps) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(3);
-    const [documents] = useState([
-        { id: 1, name: 'FAA_guidelines.pdf', type: 'pdf' },
-        { id: 2, name: 'DOT_Standards.pdf', type: 'pdf' },
-        { id: 3, name: 'GSA_Guidelines.pdf', type: 'pdf' },
-        { id: 4, name: 'TSA_Updates.pdf', type: 'pdf' },
-    ]);
+    const [totalPages, setTotalPages] = useState(3); // This would come from document metadata
 
-    return (
-        <div className="flex h-screen bg-zinc-950">
-            {/* Left Sidebar */}
-            <div className="w-72 bg-black border-r border-zinc-800 flex flex-col">
-                <div className="p-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
-                        <Input
-                            placeholder="search in chat"
-                            className="pl-9 bg-zinc-900 border-zinc-800 text-zinc-300 placeholder:text-zinc-500"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto">
-                    {documents.map((doc) => (
-                        <div
-                            key={doc.id}
-                            className="flex items-center px-4 py-2 hover:bg-zinc-900 cursor-pointer"
-                        >
-                            <FileText className="h-4 w-4 text-zinc-400 mr-3" />
-                            <span className="text-zinc-300 text-sm">{doc.name}</span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="border-t border-zinc-800">
-                    <div className="flex items-center px-4 py-2 hover:bg-zinc-900 cursor-pointer">
-                        <Trash2 className="h-4 w-4 text-zinc-400 mr-3" />
-                        <span className="text-zinc-300 text-sm">Trash</span>
-                    </div>
-                    <div className="flex items-center px-4 py-2 hover:bg-zinc-900 cursor-pointer">
-                        <Archive className="h-4 w-4 text-zinc-400 mr-3" />
-                        <span className="text-zinc-300 text-sm">Archive</span>
-                    </div>
+    if (!document) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-zinc-900">
+                <div className="text-center">
+                    <FileText className="h-12 w-12 text-zinc-600 mx-auto mb-4" />
+                    <p className="text-zinc-500">Select a document to view</p>
                 </div>
             </div>
+        );
+    }
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-                {/* Top Bar */}
-                <div className="h-14 border-b border-zinc-800 flex items-center justify-between px-4">
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                            <ZoomOut className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                            <ZoomIn className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                            <Maximize2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <span className="text-zinc-300 text-sm">Ref: {currentPage}/{totalPages}</span>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
-                    </div>
-
+    return (
+        <div className="flex-1 flex flex-col bg-zinc-900">
+            {/* Top Bar */}
+            <div className="h-14 border-b border-zinc-800 flex items-center justify-between px-4">
+                <div className="flex items-center gap-2">
                     <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                        <MoreVertical className="h-4 w-4" />
+                        <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                        <ZoomIn className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                        <Maximize2 className="h-4 w-4" />
                     </Button>
                 </div>
 
-                {/* Document Content */}
-                <div className="flex-1 overflow-y-auto bg-zinc-900 p-6">
-                    <Card className="max-w-4xl mx-auto bg-white p-8">
-                        <div className="space-y-4">
-                            {/* Sample Document Content */}
-                            <h2 className="text-2xl font-semibold">New FAA Guidelines</h2>
-                            <p className="text-zinc-600">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec dui
-                                vel nunc dictum tincidunt. Proin nec ex nec
-                            </p>
-                            <div className="space-y-2">
-                                <h3 className="font-medium">Key Points:</h3>
-                                <ul className="list-disc pl-5 space-y-1">
-                                    <li>Confidentiality Period: Lorem ipsum dolor sit amet</li>
-                                    <li>Permissible Disclosures: Ut enim ad minima veniam</li>
-                                    <li>Penalties for Breach: Duis aute irure dolor</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </Card>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-zinc-300 text-sm">Page {currentPage}/{totalPages}</span>
+                    <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="h-14 border-t border-zinc-800 flex items-center justify-between px-4">
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            Page 5
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            Page 13
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            Page 21
-                        </Button>
+                <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                    <MoreVertical className="h-4 w-4" />
+                </Button>
+            </div>
+
+            {/* Document Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+                <Card className="max-w-4xl mx-auto bg-white p-8">
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold">{document.originalFilename}</h2>
+                        <p className="text-zinc-600">Document content will be displayed here.</p>
+                        <div className="space-y-2">
+                            <h3 className="font-medium">Document Details:</h3>
+                            <ul className="list-disc pl-5 space-y-1">
+                                <li>Size: {(document.size / 1024).toFixed(2)} KB</li>
+                                <li>Last Modified: {new Date(document.lastModified).toLocaleString()}</li>
+                                <li>Type: {document.contentType || 'Not specified'}</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-zinc-400 text-sm">Version: 2/2</span>
-                    </div>
+                </Card>
+            </div>
+
+            {/* Bottom Bar */}
+            <div className="h-14 border-t border-zinc-800 flex items-center justify-between px-4">
+                <div className="flex items-center gap-2">
+                    {[1, 2, 3].map((page) => (
+                        <Button
+                            key={page}
+                            variant="ghost"
+                            size="sm"
+                            className="text-zinc-400 hover:text-white"
+                            onClick={() => setCurrentPage(page)}
+                        >
+                            Page {page}
+                        </Button>
+                    ))}
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-zinc-400 text-sm">Version: 1/1</span>
                 </div>
             </div>
         </div>

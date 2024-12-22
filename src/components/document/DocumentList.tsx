@@ -4,13 +4,18 @@ import { observer } from 'mobx-react-lite';
 import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
 import { FileText, Loader2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Document } from '@/lib/frontend/api/datasource/datasource.api';
 
-const DocumentList = () => {
+interface DocumentListProps {
+    onDocumentSelect: (document: Document) => void;
+    selectedDocument: Document | null;
+}
+
+const DocumentList = ({ onDocumentSelect, selectedDocument }: DocumentListProps) => {
     const store = useServiceStore();
-    const [documents, setDocuments] = useState([]);
+    const [documents, setDocuments] = useState<Document[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedDoc, setSelectedDoc] = useState(null);
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -18,15 +23,7 @@ const DocumentList = () => {
                 const response = await store.dataSourceService.listDocuments('standard');
 
                 if (response.ok && response.documents) {
-                    const formattedDocs = response.documents.map((doc, index) => ({
-                        id: index + 1,
-                        name: doc.originalFilename || doc.name,
-                        type: doc.contentType,
-                        uploadedAt: new Date(doc.lastModified).toLocaleDateString(),
-                        size: doc.size,
-                        originalName: doc.name // store original name for fetching
-                    }));
-                    setDocuments(formattedDocs);
+                    setDocuments(response.documents);
                 } else {
                     throw new Error(response.error || 'Failed to fetch documents');
                 }
@@ -41,7 +38,7 @@ const DocumentList = () => {
     }, [store]);
 
     const filteredDocuments = documents.filter(doc =>
-        doc.name.toLowerCase().includes(searchQuery.toLowerCase())
+        doc.originalFilename.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -66,15 +63,19 @@ const DocumentList = () => {
                 ) : filteredDocuments.length > 0 ? (
                     filteredDocuments.map((doc) => (
                         <div
-                            key={doc.id}
-                            className={`flex items-center px-4 py-2 cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? 'bg-zinc-800' : 'hover:bg-zinc-900'
+                            key={doc.name}
+                            className={`flex items-center px-4 py-2 cursor-pointer transition-colors ${selectedDocument?.name === doc.name ? 'bg-zinc-800' : 'hover:bg-zinc-900'
                                 }`}
-                            onClick={() => setSelectedDoc(doc)}
+                            onClick={() => onDocumentSelect(doc)}
                         >
                             <FileText className="h-4 w-4 text-zinc-400 mr-3" />
                             <div className="flex flex-col">
-                                <span className="text-zinc-300 text-sm truncate">{doc.name}</span>
-                                <span className="text-zinc-500 text-xs">{doc.uploadedAt}</span>
+                                <span className="text-zinc-300 text-sm truncate">
+                                    {doc.originalFilename}
+                                </span>
+                                <span className="text-zinc-500 text-xs">
+                                    {new Date(doc.lastModified).toLocaleDateString()}
+                                </span>
                             </div>
                         </div>
                     ))
