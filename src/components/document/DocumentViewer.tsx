@@ -10,11 +10,10 @@ const DocumentViewer = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(3);
     const [documents] = useState([
-        { id: 1, name: 'Climate_Change.pdf', type: 'pdf' },
-        { id: 2, name: 'Privacy_Policy_Template.pdf', type: 'pdf' },
-        { id: 3, name: 'Climate_Change.pdf', type: 'pdf' },
-        { id: 4, name: 'Climate_Change.pdf', type: 'pdf' },
-        { id: 5, name: 'Climate_Change.pdf', type: 'pdf' },
+        { id: 1, name: 'FAA_guidelines.pdf', type: 'pdf' },
+        { id: 2, name: 'DOT_Standards.pdf', type: 'pdf' },
+        { id: 3, name: 'GSA_Guidelines.pdf', type: 'pdf' },
+        { id: 4, name: 'TSA_Updates.pdf', type: 'pdf' },
     ]);
 
     return (
@@ -93,10 +92,10 @@ const DocumentViewer = () => {
                     <Card className="max-w-4xl mx-auto bg-white p-8">
                         <div className="space-y-4">
                             {/* Sample Document Content */}
-                            <h2 className="text-xl font-semibold">Climate Change Mitigation Strategy</h2>
+                            <h2 className="text-2xl font-semibold">New FAA Guidelines</h2>
                             <p className="text-zinc-600">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis nisl
-                                nec tortor malesuada, et aliquam neque fermentum.
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec dui
+                                vel nunc dictum tincidunt. Proin nec ex nec
                             </p>
                             <div className="space-y-2">
                                 <h3 className="font-medium">Key Points:</h3>

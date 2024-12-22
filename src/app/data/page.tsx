@@ -1,30 +1,60 @@
 "use client";
 import React, { useState } from 'react';
+import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { DropZone } from '@/components/atoms/dropzone/DropZone';
+import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
+import { Loader2 } from 'lucide-react';
 
 const AddDataSource = () => {
+    const store = useServiceStore();
     const [activeTab, setActiveTab] = useState('upload');
     const [connectionType, setConnectionType] = useState('');
     const [connectionUrl, setConnectionUrl] = useState('');
     const [apiKey, setApiKey] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
     const [processingOptions, setProcessingOptions] = useState({
         enableOcr: false,
         extractTables: false
     });
 
-    const handleProcessingOptionChange = (option) => {
+    const handleProcessingOptionChange = (option: string) => {
         setProcessingOptions(prev => ({
             ...prev,
             [option]: !prev[option]
         }));
     };
 
-    const handleCreateDataSource = () => {
-        // Handle data source creation
-        console.log('Creating data source...');
+    const handleFileSelect = async (files: FileList) => {
+        if (files.length > 0) {
+            setIsUploading(true);
+            try {
+                await store.dataSourceService.uploadFile(
+                    files[0],
+                    processingOptions.enableOcr ? 'ocr' : 'standard'
+                );
+                alert('File uploaded successfully!');
+            } catch (error) {
+                console.error('Upload failed:', error);
+                alert('Failed to upload file. Please try again.');
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
+    const handleCreateDataSource = async () => {
+        if (activeTab === 'connect') {
+            // Handle database connection
+            console.log({
+                connectionType,
+                connectionUrl,
+                apiKey
+            });
+        }
     };
 
     return (
@@ -65,12 +95,7 @@ const AddDataSource = () => {
                             </p>
 
                             {/* Upload Area */}
-                            <div className="border-2 border-dashed border-zinc-800 rounded-lg p-8 mb-6">
-                                <div className="text-center">
-                                    <p className="text-zinc-400 mb-2">Drag and drop your files here, or click to browse</p>
-                                    <p className="text-sm text-zinc-500">Supports PDF, DOCX, TXT (up to 100MB each)</p>
-                                </div>
-                            </div>
+                            <DropZone onFileSelect={handleFileSelect} />
 
                             {/* Processing Options */}
                             <div>
@@ -163,8 +188,16 @@ const AddDataSource = () => {
                     <Button
                         className="bg-white text-black hover:bg-zinc-200"
                         onClick={handleCreateDataSource}
+                        disabled={isUploading}
                     >
-                        Create Data Source
+                        {isUploading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Uploading...
+                            </>
+                        ) : (
+                            'Create Data Source'
+                        )}
                     </Button>
                 </div>
             </div>
@@ -172,4 +205,4 @@ const AddDataSource = () => {
     );
 };
 
-export default AddDataSource;
+export default observer(AddDataSource);
