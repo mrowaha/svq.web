@@ -1,10 +1,9 @@
-"use client";
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { FileText, Search, ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
+import { FileText, ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
 import { Document } from '@/lib/frontend/api/datasource/datasource.api';
+import PDFViewer from './PDFViewer';
 
 interface DocumentViewerProps {
     document: Document | null;
@@ -12,7 +11,8 @@ interface DocumentViewerProps {
 
 const DocumentViewer = ({ document }: DocumentViewerProps) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(3); // This would come from document metadata
+    const [totalPages, setTotalPages] = useState(3);
+    const [zoom, setZoom] = useState(100);
 
     if (!document) {
         return (
@@ -25,15 +25,29 @@ const DocumentViewer = ({ document }: DocumentViewerProps) => {
         );
     }
 
+    const handleZoomIn = () => setZoom(prev => Math.min(prev + 25, 200));
+    const handleZoomOut = () => setZoom(prev => Math.max(prev - 25, 50));
+
     return (
         <div className="flex-1 flex flex-col bg-zinc-900">
             {/* Top Bar */}
             <div className="h-14 border-b border-zinc-800 flex items-center justify-between px-4">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-zinc-400 hover:text-white"
+                        onClick={handleZoomOut}
+                    >
                         <ZoomOut className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                    <span className="text-zinc-400 text-sm">{zoom}%</span>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-zinc-400 hover:text-white"
+                        onClick={handleZoomIn}
+                    >
                         <ZoomIn className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
@@ -57,40 +71,23 @@ const DocumentViewer = ({ document }: DocumentViewerProps) => {
             </div>
 
             {/* Document Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-                <Card className="max-w-4xl mx-auto bg-white p-8">
-                    <div className="space-y-4">
-                        <h2 className="text-2xl font-semibold">{document.originalFilename}</h2>
-                        <p className="text-zinc-600">Document content will be displayed here.</p>
-                        <div className="space-y-2">
-                            <h3 className="font-medium">Document Details:</h3>
-                            <ul className="list-disc pl-5 space-y-1">
-                                <li>Size: {(document.size / 1024).toFixed(2)} KB</li>
-                                <li>Last Modified: {new Date(document.lastModified).toLocaleString()}</li>
-                                <li>Type: {document.contentType || 'Not specified'}</li>
-                            </ul>
-                        </div>
-                    </div>
-                </Card>
+            <div className="flex-1 overflow-y-auto">
+                <div className="h-full" style={{ zoom: `${zoom}%` }}>
+                    <PDFViewer document={document} />
+                </div>
             </div>
 
             {/* Bottom Bar */}
             <div className="h-14 border-t border-zinc-800 flex items-center justify-between px-4">
                 <div className="flex items-center gap-2">
-                    {[1, 2, 3].map((page) => (
-                        <Button
-                            key={page}
-                            variant="ghost"
-                            size="sm"
-                            className="text-zinc-400 hover:text-white"
-                            onClick={() => setCurrentPage(page)}
-                        >
-                            Page {page}
-                        </Button>
-                    ))}
+                    <span className="text-zinc-400 text-sm">
+                        {document.originalFilename}
+                    </span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="text-zinc-400 text-sm">Version: 1/1</span>
+                    <span className="text-zinc-400 text-sm">
+                        {(document.size / 1024).toFixed(2)} KB
+                    </span>
                 </div>
             </div>
         </div>
