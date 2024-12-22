@@ -1,6 +1,8 @@
 "use client";
 import { initializeStore } from "@/lib/infra/mobx/intiailize-store";
 import { StoreProvider } from "@/lib/infra/mobx/root-store.provider";
+import "./globals.css";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -8,7 +10,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>SVQ.ai</title>
+      </head>
+      <body className="min-h-screen bg-background text-foreground">
         <StoreProvider value={initializeStore()}>{children}</StoreProvider>
       </body>
     </html>
