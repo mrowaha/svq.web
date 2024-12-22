@@ -19,6 +19,7 @@ const Navbar = ({ userName = "Alicia Koch", avatarUrl }: NavbarProps) => {
 
     const navItems: NavItem[] = [
         { href: "/", label: "Dashboard" },
+        { href: "/chat", label: "Chat" },
         { href: "/data", label: "Data" },
         { href: "/pricing", label: "Pricing" },
         { href: "/settings", label: "Settings" }
