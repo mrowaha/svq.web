@@ -47,6 +47,7 @@ function Home() {
     try {
       const response = await store.dataSourceService.listDocuments('standard');
       if (response.ok) {
+        console.log('Documents response:', response.documents);
         setDocuments(response.documents);
         setFilteredDocs(response.documents);
       }
@@ -237,7 +238,18 @@ function Home() {
                       {doc.originalFilename}
                     </TableCell>
                     <TableCell className="text-zinc-400">
-                      {doc.contentType ? (doc.contentType.includes('/') ? doc.contentType.split('/')[1].toUpperCase() : doc.contentType.toUpperCase()) : 'UNKNOWN'}
+                      {(() => {
+                        if (doc.originalFilename) {
+                          const ext = doc.originalFilename.split('.').pop()?.toLowerCase();
+                          switch (ext) {
+                            case 'pdf': return 'PDF';
+                            case 'docx': return 'DOCX';
+                            case 'txt': return 'TXT';
+                            default: return ext ? ext.toUpperCase() : 'UNKNOWN';
+                          }
+                        }
+                        return 'UNKNOWN';
+                      })()}
                     </TableCell>
                     <TableCell className="text-zinc-400">
                       {formatFileSize(doc.size)}
