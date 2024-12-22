@@ -12,7 +12,7 @@ const onRequest = (
   config.headers["Content-Type"] =
     config.headers["Content-Type"] ?? "application/json";
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("svq-token");
   Object.assign(config.headers, token && { Authorization: `Bearer ${token}` });
   return config;
 };
@@ -26,6 +26,9 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 };
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
+  if (error.response.status === 401) {
+    console.log("not authorized");
+  }
   return Promise.reject(error);
 };
 

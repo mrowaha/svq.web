@@ -3,12 +3,14 @@ import { initializeStore } from "@/lib/infra/mobx/intiailize-store";
 import { StoreProvider } from "@/lib/infra/mobx/root-store.provider";
 import "./globals.css";
 import Navbar from "@/components/layout/navbar";
+import { useRouter } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
   return (
     <html lang="en">
       <head>
@@ -17,7 +19,7 @@ export default function RootLayout({
         <title>SVQ.ai</title>
       </head>
       <body className="min-h-screen bg-background text-foreground">
-        <StoreProvider value={initializeStore()}>
+        <StoreProvider value={initializeStore(router)}>
           <Navbar />
           {children}
         </StoreProvider>

@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,16 +25,31 @@ import {
   Database,
   Activity,
   MoreHorizontal,
-  UserCircle
-} from 'lucide-react';
-import Navbar from '@/components/layout/navbar';
+  UserCircle,
+} from "lucide-react";
+import Navbar from "@/components/layout/navbar";
 
 function Home() {
   const stats = [
     { title: "Total Documents", value: "231", icon: FileText },
-    { title: "Queries Today", value: "+2350", subtext: "+180.1% from last month", icon: Users },
-    { title: "Vector Embeddings", value: "+12,234", subtext: "+19% from last month", icon: Database },
-    { title: "Active Sources", value: "+573", subtext: "+201 since last hour", icon: Activity },
+    {
+      title: "Queries Today",
+      value: "+2350",
+      subtext: "+180.1% from last month",
+      icon: Users,
+    },
+    {
+      title: "Vector Embeddings",
+      value: "+12,234",
+      subtext: "+19% from last month",
+      icon: Database,
+    },
+    {
+      title: "Active Sources",
+      value: "+573",
+      subtext: "+201 since last hour",
+      icon: Activity,
+    },
   ];
 
   const documents = [
@@ -87,7 +102,9 @@ function Home() {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm text-zinc-400">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-white mt-2">{stat.value}</h3>
+                  <h3 className="text-2xl font-bold text-white mt-2">
+                    {stat.value}
+                  </h3>
                   {stat.subtext && (
                     <p className="text-sm text-zinc-400 mt-1">{stat.subtext}</p>
                   )}
@@ -125,32 +142,59 @@ function Home() {
             <TableHeader>
               <TableRow className="border-zinc-800 hover:bg-zinc-800/50">
                 <TableHead className="w-12 text-zinc-400 font-medium">
-                  <input type="checkbox" className="rounded-sm bg-zinc-800 border-zinc-700" />
+                  <input
+                    type="checkbox"
+                    className="rounded-sm bg-zinc-800 border-zinc-700"
+                  />
                 </TableHead>
-                <TableHead className="text-zinc-400 font-medium">Status</TableHead>
-                <TableHead className="text-zinc-400 font-medium">Name</TableHead>
-                <TableHead className="text-zinc-400 font-medium">Pages</TableHead>
+                <TableHead className="text-zinc-400 font-medium">
+                  Status
+                </TableHead>
+                <TableHead className="text-zinc-400 font-medium">
+                  Name
+                </TableHead>
+                <TableHead className="text-zinc-400 font-medium">
+                  Pages
+                </TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {documents.map((doc, index) => (
-                <TableRow key={index} className="border-zinc-800 hover:bg-zinc-800/50">
+                <TableRow
+                  key={index}
+                  className="border-zinc-800 hover:bg-zinc-800/50"
+                >
                   <TableCell>
-                    <input type="checkbox" className="rounded-sm bg-zinc-800 border-zinc-700" />
+                    <input
+                      type="checkbox"
+                      className="rounded-sm bg-zinc-800 border-zinc-700"
+                    />
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${doc.status === 'Success' ? 'bg-green-950/50 text-green-400' :
-                        doc.status === 'Processing' ? 'bg-blue-950/50 text-blue-400' :
-                          'bg-red-950/50 text-red-400'}`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                      ${
+                        doc.status === "Success"
+                          ? "bg-green-950/50 text-green-400"
+                          : doc.status === "Processing"
+                          ? "bg-blue-950/50 text-blue-400"
+                          : "bg-red-950/50 text-red-400"
+                      }`}
+                    >
                       {doc.status}
                     </span>
                   </TableCell>
-                  <TableCell className="font-medium text-white">{doc.name}</TableCell>
+                  <TableCell className="font-medium text-white">
+                    {doc.name}
+                  </TableCell>
                   <TableCell className="text-zinc-400">{doc.pages}</TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="hover:bg-zinc-800">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-zinc-800"
+                    >
                       <MoreHorizontal className="h-4 w-4 text-zinc-400" />
                     </Button>
                   </TableCell>
