@@ -6,6 +6,7 @@ import { Send, Loader2 } from 'lucide-react';
 import { Document } from '@/lib/frontend/api/datasource/datasource.api';
 import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
 import { Message } from '@/lib/frontend/api/chat/chat.api';
+import ChatSelectionButton from './ChatSelectionButton';
 
 
 interface ChatInterfaceProps {
@@ -92,7 +93,11 @@ const ChatInterface = observer(({ document, isDocumentOpen, onToggleDocument }: 
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800">
-            {/* Messages Area */}
+            <ChatSelectionButton
+                onSelectionChat={(selectedText) => {
+                    setMessage((prev) => prev + (prev ? ' ' : '') + `"${selectedText}"`);
+                }}
+            />
             <div className="max-h-96 overflow-y-auto p-4 space-y-4">
                 {messages.map((msg) => (
                     <div
