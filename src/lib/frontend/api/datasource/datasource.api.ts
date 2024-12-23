@@ -1,5 +1,19 @@
 import { BaseApi } from "../base.api";
 
+export interface Document {
+  name: string;
+  size: number;
+  lastModified: string;
+  contentType: string;
+  originalFilename: string;
+}
+
+export interface ListDocumentsResponse {
+  ok: boolean;
+  documents: Document[];
+  error?: string;
+}
+
 class DataSourceApi extends BaseApi {
   constructor() {
     super("/datasource");
@@ -10,7 +24,15 @@ class DataSourceApi extends BaseApi {
     formData.append("file", file);
     formData.append("datasource", datasource);
 
-    return await this.post("/upload", formData, "multipart/form-data");
+    return await this.post<{ ok: boolean }>(
+      "/upload",
+      formData,
+      "multipart/form-data"
+    );
+  }
+
+  async listDocuments(datasource: string): Promise<ListDocumentsResponse> {
+    return await this.get<ListDocumentsResponse>(`/list?datasource=${datasource}`);
   }
 }
 

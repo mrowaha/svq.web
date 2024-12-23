@@ -1,134 +1,87 @@
-"use client";
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { FileText, Archive, Trash2, Search, ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
+import React from 'react';
+import { Document } from '@/lib/frontend/api/datasource/datasource.api';
+import PDFViewer from './PDFViewer';
+import TextViewer from './TextViewer';
 
-const DocumentViewer = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(3);
-    const [documents] = useState([
-        { id: 1, name: 'FAA_guidelines.pdf', type: 'pdf' },
-        { id: 2, name: 'DOT_Standards.pdf', type: 'pdf' },
-        { id: 3, name: 'GSA_Guidelines.pdf', type: 'pdf' },
-        { id: 4, name: 'TSA_Updates.pdf', type: 'pdf' },
-    ]);
+interface DocumentViewerProps {
+    document: Document | null;
+}
 
-    return (
-        <div className="flex h-screen bg-zinc-950">
-            {/* Left Sidebar */}
-            <div className="w-72 bg-black border-r border-zinc-800 flex flex-col">
-                <div className="p-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
-                        <Input
-                            placeholder="search in chat"
-                            className="pl-9 bg-zinc-900 border-zinc-800 text-zinc-300 placeholder:text-zinc-500"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto">
-                    {documents.map((doc) => (
-                        <div
-                            key={doc.id}
-                            className="flex items-center px-4 py-2 hover:bg-zinc-900 cursor-pointer"
-                        >
-                            <FileText className="h-4 w-4 text-zinc-400 mr-3" />
-                            <span className="text-zinc-300 text-sm">{doc.name}</span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="border-t border-zinc-800">
-                    <div className="flex items-center px-4 py-2 hover:bg-zinc-900 cursor-pointer">
-                        <Trash2 className="h-4 w-4 text-zinc-400 mr-3" />
-                        <span className="text-zinc-300 text-sm">Trash</span>
-                    </div>
-                    <div className="flex items-center px-4 py-2 hover:bg-zinc-900 cursor-pointer">
-                        <Archive className="h-4 w-4 text-zinc-400 mr-3" />
-                        <span className="text-zinc-300 text-sm">Archive</span>
-                    </div>
-                </div>
+const DocumentViewer: React.FC<DocumentViewerProps> = ({ document }) => {
+    if (!document) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-zinc-900/50 text-zinc-400">
+                Select a document to view
             </div>
+        );
+    }
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-                {/* Top Bar */}
-                <div className="h-14 border-b border-zinc-800 flex items-center justify-between px-4">
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                            <ZoomOut className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                            <ZoomIn className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                            <Maximize2 className="h-4 w-4" />
-                        </Button>
-                    </div>
+    const documentUrl = `/api/v1/datasource/content/${document.name}?datasource=standard`;
 
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <span className="text-zinc-300 text-sm">Ref: {currentPage}/{totalPages}</span>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
-                    </div>
+    // Function to determine the viewer type based on content type and file extension
+    const getViewerType = (doc: Document) => {
+        // List of supported content types for each viewer
+        const pdfTypes = [
+            'application/pdf',
+            'application/x-pdf',
+            'application/acrobat',
+            'application/vnd.pdf',
+            'text/pdf',
+            'text/x-pdf'
+        ];
 
-                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                        <MoreVertical className="h-4 w-4" />
-                    </Button>
+        const textTypes = [
+            'text/plain',
+            'text/txt',
+            'text/text',
+            '.txt',
+            'application/txt'
+        ];
+
+        const contentType = doc.contentType?.toLowerCase() || '';
+        const fileName = doc.name?.toLowerCase() || '';
+
+        // Check file extension
+        const fileExtension = fileName.split('.').pop()?.toLowerCase();
+
+        // Determine viewer type based on content type and file extension
+        if (pdfTypes.some(type => contentType.includes(type)) || fileExtension === 'pdf') {
+            return 'pdf';
+        }
+
+        if (textTypes.some(type => contentType.includes(type)) || fileExtension === 'txt') {
+            return 'text';
+        }
+
+        return 'unsupported';
+    };
+
+    // Get the appropriate viewer type
+    const viewerType = getViewerType(document);
+
+    // Render the appropriate viewer
+    switch (viewerType) {
+        case 'text':
+            return (
+                <div className="flex-1 overflow-hidden bg-zinc-900/50">
+                    <TextViewer documentUrl={documentUrl} className="h-full" />
                 </div>
-
-                {/* Document Content */}
-                <div className="flex-1 overflow-y-auto bg-zinc-900 p-6">
-                    <Card className="max-w-4xl mx-auto bg-white p-8">
-                        <div className="space-y-4">
-                            {/* Sample Document Content */}
-                            <h2 className="text-2xl font-semibold">New FAA Guidelines</h2>
-                            <p className="text-zinc-600">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec dui
-                                vel nunc dictum tincidunt. Proin nec ex nec
-                            </p>
-                            <div className="space-y-2">
-                                <h3 className="font-medium">Key Points:</h3>
-                                <ul className="list-disc pl-5 space-y-1">
-                                    <li>Confidentiality Period: Lorem ipsum dolor sit amet</li>
-                                    <li>Permissible Disclosures: Ut enim ad minima veniam</li>
-                                    <li>Penalties for Breach: Duis aute irure dolor</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </Card>
+            );
+        case 'pdf':
+            return (
+                <div className="flex-1 overflow-hidden bg-zinc-900/50">
+                    <PDFViewer document={document} />
                 </div>
-
-                {/* Bottom Bar */}
-                <div className="h-14 border-t border-zinc-800 flex items-center justify-between px-4">
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            Page 5
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            Page 13
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                            Page 21
-                        </Button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-zinc-400 text-sm">Version: 2/2</span>
-                    </div>
+            );
+        default:
+            return (
+                <div className="flex-1 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 text-zinc-400 p-4">
+                    <p>Unsupported document type: {document.contentType}</p>
+                    <p className="text-sm text-zinc-500">File: {document.name}</p>
+                    <p className="text-sm text-zinc-500">Currently supported formats: PDF, TXT</p>
                 </div>
-            </div>
-        </div>
-    );
+            );
+    }
 };
 
 export default DocumentViewer;
