@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; 
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
 const LoginPage = () => {
+    const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,6 +19,7 @@ const LoginPage = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       alert(`Login successful for: ${email}`);
+      router.push("/");
     } catch (error) {
       console.error("Login failed:", error);
       alert("Failed to login. Please try again.");

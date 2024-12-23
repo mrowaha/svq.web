@@ -6,6 +6,7 @@ import { Send, Loader2 } from 'lucide-react';
 import { Document } from '@/lib/frontend/api/datasource/datasource.api';
 import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
 import { Message } from '@/lib/frontend/api/chat/chat.api';
+import ChatSelectionButton from './ChatSelectionButton';
 
 
 interface ChatInterfaceProps {
@@ -92,7 +93,11 @@ const ChatInterface = observer(({ document, isDocumentOpen, onToggleDocument }: 
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800">
-            {/* Messages Area */}
+            <ChatSelectionButton
+                onSelectionChat={(selectedText) => {
+                    setMessage((prev) => prev + (prev ? ' ' : '') + `"${selectedText}"`);
+                }}
+            />
             <div className="max-h-96 overflow-y-auto p-4 space-y-4">
                 {messages.map((msg) => (
                     <div
@@ -145,9 +150,9 @@ const ChatInterface = observer(({ document, isDocumentOpen, onToggleDocument }: 
                                 <Send className="h-4 w-4" />
                             )}
                         </Button>
-                        <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
+                        {/* <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
                             <span className="text-sm text-zinc-400">
-                                {isDocumentOpen ? 'Hide' : 'Show'} Document
+                                {isDocumentOpen ? 'Show' : 'Hide'} Document
                             </span>
                             <div
                                 className={`w-12 h-6 rounded-full bg-zinc-800 p-1 cursor-pointer transition-colors ${isDocumentOpen ? 'bg-zinc-700' : 'bg-zinc-800'
@@ -159,7 +164,7 @@ const ChatInterface = observer(({ document, isDocumentOpen, onToggleDocument }: 
                                         }`}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
