@@ -150,9 +150,9 @@ const ChatInterface = observer(({ document, isDocumentOpen, onToggleDocument }: 
                                 <Send className="h-4 w-4" />
                             )}
                         </Button>
-                        <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
+                        {/* <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
                             <span className="text-sm text-zinc-400">
-                                {isDocumentOpen ? 'Hide' : 'Show'} Document
+                                {isDocumentOpen ? 'Show' : 'Hide'} Document
                             </span>
                             <div
                                 className={`w-12 h-6 rounded-full bg-zinc-800 p-1 cursor-pointer transition-colors ${isDocumentOpen ? 'bg-zinc-700' : 'bg-zinc-800'
@@ -164,7 +164,7 @@ const ChatInterface = observer(({ document, isDocumentOpen, onToggleDocument }: 
                                         }`}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
