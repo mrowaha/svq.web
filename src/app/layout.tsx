@@ -1,6 +1,7 @@
 "use client";
 import { initializeStore } from "@/lib/infra/mobx/intiailize-store";
 import { StoreProvider } from "@/lib/infra/mobx/root-store.provider";
+import { usePathname } from "next/navigation";
 import "./globals.css";
 import Navbar from "@/components/layout/navbar";
 
@@ -9,6 +10,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname(); // Get the current route
+  // Check if the current path is one where the Navbar should be hidden
+  const hideNavbar = pathname === "/login" || pathname === "/signup";
+
   return (
     <html lang="en">
       <head>
@@ -18,7 +23,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground">
         <StoreProvider value={initializeStore()}>
-          <Navbar />
+          {!hideNavbar && <Navbar />}
           {children}
         </StoreProvider>
       </body>
