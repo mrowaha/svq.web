@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import {
   FileText,
-  Users,
+  Clock,
   Database,
   Activity,
   MoreHorizontal,
@@ -29,7 +29,9 @@ import {
   Trash2,
   Download,
   Share2,
-  ChevronDown
+  ChevronDown,
+  Star,
+  AlertCircle
 } from 'lucide-react';
 import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
 import { Document } from '@/lib/frontend/api/datasource/datasource.api';
@@ -46,6 +48,9 @@ const Dashboard = () => {
   const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
   const [sortConfig, setSortConfig] = useState({ key: 'lastModified', direction: 'desc' });
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -66,43 +71,110 @@ const Dashboard = () => {
     }
   };
 
-  // Calculate statistics for the dashboard
-  const stats = [
+  // Calculate user-specific statistics
+  const userStats = [
     {
-      title: "Total Documents",
-      value: documents.length.toString(),
-      icon: FileText,
-      change: "+12% from last month",
-      trend: "up"
+      title: "Recent Activity",
+      value: `${documents.filter(doc => {
+        const lastModified = new Date(doc.lastModified);
+        const now = new Date();
+        return now.getTime() - lastModified.getTime() < 24 * 60 * 60 * 1000;
+      }).length} files`,
+      icon: Clock,
+      change: "in last 24 hours",
+      trend: "neutral"
     },
     {
       title: "Storage Used",
       value: `${(documents.reduce((acc, doc) => acc + doc.size, 0) / (1024 * 1024)).toFixed(2)} MB`,
       icon: Database,
-      change: "+2.3% from last week",
+      change: "of 1 GB quota",
       trend: "up"
     },
     {
-      title: "Recent Uploads",
-      value: documents.filter(doc => {
-        const uploadDate = new Date(doc.lastModified);
-        const now = new Date();
-        const diffTime = Math.abs(now.getTime() - uploadDate.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays <= 7;
-      }).length.toString(),
-      icon: Activity,
-      change: "-5% from last week",
-      trend: "down"
+      title: "Favorite Documents",
+      value: "3",
+      icon: Star,
+      change: "frequently accessed",
+      trend: "up"
     },
     {
-      title: "Active Users",
-      value: "12",
-      icon: Users,
-      change: "Same as last week",
-      trend: "neutral"
+      title: "Pending Reviews",
+      value: "3",
+      icon: AlertCircle,
+      change: "need attention",
+      trend: "down"
     },
   ];
+
+  const handleDeleteSelected = async () => {
+    if (selectedDocs.size === 0) return;
+
+    setIsDeleting(true);
+    try {
+      await Promise.all(Array.from(selectedDocs).map(async (docName) => {
+        // Simulated API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }));
+
+      // Remove deleted docs from state
+      const updatedDocs = documents.filter(doc => !selectedDocs.has(doc.name));
+      setDocuments(updatedDocs);
+      setFilteredDocs(updatedDocs);
+      setSelectedDocs(new Set());
+    } catch (error) {
+      console.error('Error deleting documents:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDownloadSelected = async () => {
+    if (selectedDocs.size === 0) return;
+
+    setIsDownloading(true);
+    try {
+      await Promise.all(Array.from(selectedDocs).map(async (docName) => {
+        const doc = documents.find(d => d.name === docName);
+        if (doc) {
+          const response = await fetch(`/api/v1/datasource/content/${doc.name}?datasource=standard`);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = doc.originalFilename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        }
+      }));
+    } catch (error) {
+      console.error('Error downloading documents:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleShareSelected = async () => {
+    if (selectedDocs.size === 0) return;
+
+    setIsSharing(true);
+    try {
+      const selectedDocNames = Array.from(selectedDocs).map(docName => {
+        const doc = documents.find(d => d.name === docName);
+        return doc?.originalFilename;
+      }).join(', ');
+
+      // For now, just copying names to clipboard
+      await navigator.clipboard.writeText(selectedDocNames);
+      alert('Document names copied to clipboard!');
+    } catch (error) {
+      console.error('Error sharing documents:', error);
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   const handleSort = (key: string) => {
     const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
@@ -174,21 +246,6 @@ const Dashboard = () => {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const handleDeleteSelected = () => {
-    // Implement delete functionality
-    console.log('Deleting:', Array.from(selectedDocs));
-  };
-
-  const handleDownloadSelected = () => {
-    // Implement download functionality
-    console.log('Downloading:', Array.from(selectedDocs));
-  };
-
-  const handleShareSelected = () => {
-    // Implement share functionality
-    console.log('Sharing:', Array.from(selectedDocs));
-  };
-
   // Pagination
   const totalPages = Math.ceil(filteredDocs.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -197,24 +254,22 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black">
       <main className="p-6">
+        {/* User Activity Stats */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
+            <h1 className="text-2xl font-semibold text-white">My Dashboard</h1>
           </div>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
+          {userStats.map((stat, index) => (
             <Card key={index} className="bg-zinc-900/50 border-0 p-4">
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm text-zinc-400">{stat.title}</p>
                   <h3 className="text-2xl font-bold text-white mt-2">{stat.value}</h3>
-                  <p className={`text-sm mt-1 ${stat.trend === 'up' ? 'text-green-500' :
-                      stat.trend === 'down' ? 'text-red-500' :
-                        'text-zinc-400'
-                    }`}>
+                  <p className="text-sm mt-1 text-zinc-400">
                     {stat.change}
                   </p>
                 </div>
@@ -268,8 +323,13 @@ const Dashboard = () => {
               size="sm"
               className="text-zinc-400 hover:text-white"
               onClick={handleDeleteSelected}
+              disabled={isDeleting}
             >
-              <Trash2 className="w-4 h-4 mr-2" />
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4 mr-2" />
+              )}
               Delete
             </Button>
             <Button
@@ -277,8 +337,13 @@ const Dashboard = () => {
               size="sm"
               className="text-zinc-400 hover:text-white"
               onClick={handleDownloadSelected}
+              disabled={isDownloading}
             >
-              <Download className="w-4 h-4 mr-2" />
+              {isDownloading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 mr-2" />
+              )}
               Download
             </Button>
             <Button
@@ -286,8 +351,13 @@ const Dashboard = () => {
               size="sm"
               className="text-zinc-400 hover:text-white"
               onClick={handleShareSelected}
+              disabled={isSharing}
             >
-              <Share2 className="w-4 h-4 mr-2" />
+              {isSharing ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Share2 className="h-4 w-4 mr-2" />
+              )}
               Share
             </Button>
           </div>
@@ -422,8 +492,8 @@ const Dashboard = () => {
                   variant="outline"
                   size="sm"
                   className={`w-8 ${currentPage === pageNum
-                      ? 'bg-zinc-800 text-white'
-                      : 'bg-zinc-900/50 border-zinc-800 text-white hover:bg-zinc-800'
+                    ? 'bg-zinc-800 text-white'
+                    : 'bg-zinc-900/50 border-zinc-800 text-white hover:bg-zinc-800'
                     }`}
                   onClick={() => setCurrentPage(pageNum)}
                 >
