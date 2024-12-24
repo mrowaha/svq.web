@@ -1,8 +1,8 @@
 import React from 'react';
-import { UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import ProfileButton from '../ui/ProfileButton';
 
 interface NavItem {
     href: string;
@@ -14,7 +14,7 @@ interface NavbarProps {
     avatarUrl?: string;
 }
 
-const Navbar = ({ userName = "Alicia Koch", avatarUrl }: NavbarProps) => {
+const Navbar = ({ userName = "Ghulam Ahmed", avatarUrl }: NavbarProps) => {
     const pathname = usePathname();
 
     const navItems: NavItem[] = [
@@ -60,22 +60,7 @@ const Navbar = ({ userName = "Alicia Koch", avatarUrl }: NavbarProps) => {
                         ))}
                     </nav>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 transition-colors">
-                        <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center">
-                            {avatarUrl ? (
-                                <img
-                                    src={avatarUrl}
-                                    alt={userName}
-                                    className="w-full h-full rounded-full object-cover"
-                                />
-                            ) : (
-                                <UserCircle className="w-4 h-4 text-zinc-400" />
-                            )}
-                        </div>
-                        <span className="text-zinc-200">{userName}</span>
-                    </div>
-                </div>
+                <ProfileButton userName={userName} avatarUrl={avatarUrl} />
             </div>
         </header>
     );

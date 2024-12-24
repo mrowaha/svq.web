@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { DropZone } from '@/components/atoms/dropzone/DropZone';
 import { useServiceStore } from '@/lib/infra/mobx/root-store.provider';
 import { Loader2 } from 'lucide-react';
+import UploadNotification from '@/components/ui/UploadNotification';
 
 const AddDataSource = () => {
     const store = useServiceStore();
@@ -15,7 +16,9 @@ const AddDataSource = () => {
     const [connectionType, setConnectionType] = useState('');
     const [connectionUrl, setConnectionUrl] = useState('');
     const [apiKey, setApiKey] = useState('');
-    const [isUploading, setIsUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+    const [currentFileName, setCurrentFileName] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const [processingOptions, setProcessingOptions] = useState({
         enableOcr: false,
         extractTables: false
@@ -30,18 +33,29 @@ const AddDataSource = () => {
 
     const handleFileSelect = async (files: FileList) => {
         if (files.length > 0) {
-            setIsUploading(true);
+            const file = files[0];
+            setCurrentFileName(file.name);
+            setUploadStatus('uploading');
+
             try {
                 await store.dataSourceService.uploadFile(
-                    files[0],
+                    file,
                     processingOptions.enableOcr ? 'ocr' : 'standard'
                 );
-                alert('File uploaded successfully!');
+                setUploadStatus('success');
+                setTimeout(() => {
+                    setUploadStatus('idle');
+                    setCurrentFileName('');
+                }, 3000);
             } catch (error) {
                 console.error('Upload failed:', error);
-                alert('Failed to upload file. Please try again.');
-            } finally {
-                setIsUploading(false);
+                setErrorMessage(error.message || 'Failed to upload file. Please try again.');
+                setUploadStatus('error');
+                setTimeout(() => {
+                    setUploadStatus('idle');
+                    setErrorMessage('');
+                    setCurrentFileName('');
+                }, 5000);
             }
         }
     };
@@ -55,6 +69,18 @@ const AddDataSource = () => {
                 apiKey
             });
         }
+    };
+
+    const renderNotification = () => {
+        if (uploadStatus === 'idle') return null;
+
+        return (
+            <UploadNotification
+                status={uploadStatus === 'uploading' ? 'uploading' : uploadStatus === 'success' ? 'success' : 'error'}
+                fileName={currentFileName}
+                error={errorMessage}
+            />
+        );
     };
 
     return (
@@ -188,9 +214,9 @@ const AddDataSource = () => {
                     <Button
                         className="bg-white text-black hover:bg-zinc-200"
                         onClick={handleCreateDataSource}
-                        disabled={isUploading}
+                        disabled={uploadStatus === 'uploading'}
                     >
-                        {isUploading ? (
+                        {uploadStatus === 'uploading' ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Uploading...
@@ -201,6 +227,7 @@ const AddDataSource = () => {
                     </Button>
                 </div>
             </div>
+            {renderNotification()}
         </div>
     );
 };
