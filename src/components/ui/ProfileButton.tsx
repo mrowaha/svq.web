@@ -13,13 +13,13 @@ interface ProfileButtonProps {
     avatarUrl?: string;
 }
 
-const ProfileButton = ({ userName = "Alicia Koch", avatarUrl }: ProfileButtonProps) => {
+const ProfileButton = ({ userName, avatarUrl }: ProfileButtonProps) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="flex items-center gap-2 px-2 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 transition-colors"
+                    className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 transition-colors"
                 >
                     <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center">
                         {avatarUrl ? (
