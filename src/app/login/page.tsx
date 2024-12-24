@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
 const LoginPage = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,27 +29,22 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex w-full max-w-6xl shadow-lg h-full min-h-screen">
+    <div className="flex w-full shadow-lg h-full min-h-screen">
       {/* Left Section */}
-      <Card className="flex-1 bg-black text-white flex flex-col p-10 relative h-[800px]">
-            {/* Top Section for Title */}
-            <div className="absolute top-6 left-6 flex items-center space-x-2">
-                {/* Icon */}
-            <img
-                src="/cloverlogo.svg" // Path to your logo in the public folder
-                alt="Clover Logo"
-                className="w-5 h-5 text-white"
-            />
-                {/* Text */}
-                <h1 className="text-xl font-bold text-white">Smart Vectorized Query</h1>
-            </div>
-    
-            {/* Center Section for Logo and Main Text */}
-            <div className="flex flex-1 flex-col items-center justify-center">
-            <img src="/logo.svg" alt="Logo" className="w-48 h-48 mb-4" />
-            {/* <h1 className="text-5xl font-extrabold mb-4">SVQ.ai</h1> */}
-            </div>
-        </Card>
+      <Card className="flex-1 bg-black text-white flex flex-col m-4 relative">
+        <div className="absolute top-6 left-6 flex items-center space-x-2">
+          <img
+            src="/logo.svg"
+            alt="SVQ.ai icon"
+            className="w-auto h-20 text-white"
+          />
+        </div>
+
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <img src="/icon.png" alt="Logo" className="w-32 h-32 mb-4" />
+          <h1 className="text-xl font-bold text-brand">Smart Vectorized Query</h1>
+        </div>
+      </Card>
 
       {/* Right Section */}
       <Card className="flex-1 bg-white flex flex-col items-center justify-center p-10 m-4">

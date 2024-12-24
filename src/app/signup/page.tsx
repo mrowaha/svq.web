@@ -1,30 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
 const SignUpPage = () => {
-    const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
+      alert("Passwords do not match!");
+      return;
     }
-    
+
     setIsSubmitting(true);
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-    //   alert(`Sign-up successful for: ${email}`);
+      //   alert(`Sign-up successful for: ${email}`);
       // Navigate to the login page after a successful sign-up
       router.push("/login");
     } catch (error) {
@@ -38,36 +38,32 @@ const SignUpPage = () => {
   const handleGitHubSignIn = () => {
     // Redirect to GitHub OAuth URL
     window.location.href = "https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID";
-  
+
   };
 
   const handleGmailSignIn = () => {
     // Redirect to Google OAuth URL
     window.location.href = "https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=http://localhost:3000/api/auth/callback/google&response_type=code&scope=email profile";
- };
+  };
 
   return (
-    <div className="flex w-full max-w-6xl shadow-lg h-full min-h-screen">
+    <div className="flex w-full shadow-lg h-full min-h-screen">
       {/* Left Section */}
-      <Card className="flex-1 bg-black text-white flex flex-col p-10 relative h-[800px]">
-        {/* Top Section for Title */}
+      <Card className="flex-1 bg-black text-white flex flex-col m-4 relative">
         <div className="absolute top-6 left-6 flex items-center space-x-2">
-            {/* Icon */}
-        <img
-            src="/cloverlogo.svg" // Path to your logo in the public folder
-            alt="Clover Logo"
-            className="w-5 h-5 text-white"
-        />
-            {/* Text */}
-            <h1 className="text-xl font-bold text-white">Smart Vectorized Query</h1>
+          <img
+            src="/logo.svg"
+            alt="SVQ.ai icon"
+            className="w-auto h-20 text-white"
+          />
         </div>
 
-        {/* Center Section for Logo and Main Text */}
         <div className="flex flex-1 flex-col items-center justify-center">
-          <img src="/logo.svg" alt="Logo" className="w-48 h-48 mb-4" />
-          {/* <h1 className="text-5xl font-extrabold mb-4">SVQ.ai</h1> */}
+          <img src="/icon.png" alt="Logo" className="w-32 h-32 mb-4" />
+          <h1 className="text-xl font-bold text-brand">Smart Vectorized Query</h1>
         </div>
       </Card>
+
 
       {/* Right Section */}
       <Card className="flex-1 bg-white flex flex-col items-center justify-center p-10 m-4">
@@ -98,8 +94,8 @@ const SignUpPage = () => {
                   required
                 />
               </div>
-            {/* Password Input */}
-            <div>
+              {/* Password Input */}
+              <div>
                 <Input
                   id="password"
                   type="password"
@@ -127,7 +123,7 @@ const SignUpPage = () => {
               {/* Sign Up Button */}
               <Button
                 type="submit"
-                className="w-full bg-black text-white text-lg py-3"
+                className="w-full bg-black text-white text-sm py-3"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Sign Up with Email"}
