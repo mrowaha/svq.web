@@ -76,12 +76,12 @@ const PricingPage = () => {
                     {tiers.map((tier) => (
                         <Card
                             key={tier.name}
-                            className={`relative flex flex-col border-zinc-800 bg-zinc-900/50 ${tier.popular ? 'border-2 border-blue-500' : ''
+                            className={`relative flex flex-col border-zinc-800 bg-zinc-900/50 ${tier.popular ? 'border-2 border-brand' : ''
                                 }`}
                         >
                             {tier.popular && (
                                 <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    <span className="bg-brand text-white px-3 py-1 rounded-full text-sm font-medium">
                                         Most Popular
                                     </span>
                                 </div>
@@ -100,7 +100,7 @@ const PricingPage = () => {
                                 <ul className="space-y-3">
                                     {tier.features.map((feature) => (
                                         <li key={feature} className="flex items-center text-zinc-300">
-                                            <Check className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+                                            <Check className="h-4 w-4 text-brand mr-2 flex-shrink-0" />
                                             <span>{feature}</span>
                                         </li>
                                     ))}
@@ -109,8 +109,8 @@ const PricingPage = () => {
                             <CardFooter>
                                 <Button
                                     className={`w-full ${tier.popular
-                                            ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                                            : 'bg-zinc-800 hover:bg-zinc-700 text-white'
+                                        ? 'bg-brand hover:bg-brand/90 text-white'
+                                        : 'bg-zinc-800 hover:bg-zinc-700 text-white'
                                         }`}
                                 >
                                     {tier.buttonText}

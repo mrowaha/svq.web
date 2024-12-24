@@ -273,7 +273,7 @@ const Dashboard = () => {
                     {stat.change}
                   </p>
                 </div>
-                <stat.icon className="text-zinc-400" size={20} />
+                <stat.icon className="text-brand" size={20} />
               </div>
             </Card>
           ))}
@@ -291,7 +291,7 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-3">
             <Button
-              className="bg-white text-black hover:bg-zinc-200 gap-2"
+              className="bg-brand-dark text-white hover:bg-brand-dark/90 gap-2"
               onClick={() => router.push('/data')}
             >
               <FileText className="h-4 w-4" />
@@ -532,7 +532,7 @@ const Dashboard = () => {
                     </div>
                     <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-blue-500 rounded-full"
+                        className="h-full bg-brand rounded-full"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
